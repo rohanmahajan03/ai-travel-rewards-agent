@@ -78,7 +78,7 @@ Current planned technologies include:
 - Python
 - FastAPI
 - PostgreSQL
-- React / Next.js
+- React (Vite)
 - Docker
 - Docker Compose
 
