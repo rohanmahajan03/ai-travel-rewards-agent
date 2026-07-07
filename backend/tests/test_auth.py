@@ -1,4 +1,11 @@
+from datetime import UTC, datetime, timedelta
+
 import pytest
+from jose import jwt
+from sqlalchemy import select
+
+from app.core.config import settings
+from app.db.models.user import User
 
 REGISTER_URL = "/api/v1/auth/register"
 LOGIN_URL = "/api/v1/auth/login"
@@ -104,6 +111,34 @@ def test_me_invalid_token(client):
     response = client.get(
         ME_URL,
         headers={"Authorization": "Bearer invalid.token.here"},
+    )
+
+    assert response.status_code == 401
+
+
+def test_me_expired_token(client, registered_user, db_session):
+    user = db_session.scalar(select(User).where(User.email == registered_user["email"]))
+    expired_payload = {
+        "sub": str(user.id),
+        "exp": datetime.now(UTC) - timedelta(minutes=1),
+    }
+    expired_token = jwt.encode(
+        expired_payload, settings.SECRET_KEY, algorithm=settings.ALGORITHM
+    )
+
+    response = client.get(ME_URL, headers={"Authorization": f"Bearer {expired_token}"})
+
+    assert response.status_code == 401
+
+
+def test_me_deleted_user(client, registered_user, db_session):
+    user = db_session.scalar(select(User).where(User.email == registered_user["email"]))
+    db_session.delete(user)
+    db_session.commit()
+
+    response = client.get(
+        ME_URL,
+        headers={"Authorization": f"Bearer {registered_user['token']}"},
     )
 
     assert response.status_code == 401
