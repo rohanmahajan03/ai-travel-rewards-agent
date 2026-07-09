@@ -15,7 +15,7 @@ export default function SignUpPage() {
   const [submitting, setSubmitting] = useState(false);
 
   if (!isLoading && user) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/onboarding" replace />;
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {

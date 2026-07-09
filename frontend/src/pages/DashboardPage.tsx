@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { useAuth } from "../context/AuthContext";
 
@@ -16,13 +16,21 @@ export default function DashboardPage() {
       <header className="border-b border-slate-200 bg-white">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
           <h1 className="text-lg font-semibold text-slate-900">AI Travel Rewards Agent</h1>
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
-          >
-            Log out
-          </button>
+          <div className="flex items-center gap-3">
+            <Link
+              to="/preferences"
+              className="rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            >
+              Edit preferences
+            </Link>
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            >
+              Log out
+            </button>
+          </div>
         </div>
       </header>
 
@@ -35,6 +43,12 @@ export default function DashboardPage() {
           <p className="mt-4 text-sm text-slate-500">
             Your personalized travel rewards recommendations will appear here.
           </p>
+          <Link
+            to="/preferences"
+            className="mt-6 inline-block text-sm font-medium text-blue-600 hover:text-blue-700"
+          >
+            Update your travel preferences
+          </Link>
         </div>
       </main>
     </div>

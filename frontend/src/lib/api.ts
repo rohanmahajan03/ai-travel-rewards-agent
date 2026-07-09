@@ -111,3 +111,65 @@ export function login(email: string, password: string): Promise<TokenResponse> {
 export function getMe(token?: string): Promise<User> {
   return apiFetch<User>("/api/v1/auth/me", {}, token);
 }
+
+export type OptionItem = {
+  id: string;
+  label: string;
+};
+
+export type CityOption = {
+  id: string;
+  name: string;
+  airports: string[];
+};
+
+export type CardOption = {
+  id: string;
+  name: string;
+  issuer: string;
+};
+
+export type PreferencesOptions = {
+  cities: CityOption[];
+  cards: CardOption[];
+  destination_interests: OptionItem[];
+  cabin_preferences: OptionItem[];
+  date_flexibility_options: OptionItem[];
+};
+
+export type Preferences = {
+  id: string;
+  user_id: string;
+  home_city: string;
+  home_airports: string[];
+  cards: string[];
+  destination_interests: string[] | null;
+  cabin_preference: string | null;
+  date_flexibility: string | null;
+  is_complete: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+export type PreferencesUpdate = {
+  home_city: string;
+  cards: string[];
+  destination_interests?: string[] | null;
+  cabin_preference?: string | null;
+  date_flexibility?: string | null;
+};
+
+export function getPreferenceOptions(): Promise<PreferencesOptions> {
+  return apiFetch<PreferencesOptions>("/api/v1/preferences/options");
+}
+
+export function getMyPreferences(): Promise<Preferences> {
+  return apiFetch<Preferences>("/api/v1/preferences/me");
+}
+
+export function updateMyPreferences(body: PreferencesUpdate): Promise<Preferences> {
+  return apiFetch<Preferences>("/api/v1/preferences/me", {
+    method: "PUT",
+    body: JSON.stringify(body),
+  });
+}

@@ -5,10 +5,13 @@ import {
   apiFetch,
   clearStoredToken,
   getMe,
+  getMyPreferences,
+  getPreferenceOptions,
   getStoredToken,
   login,
   register,
   setStoredToken,
+  updateMyPreferences,
 } from "./api";
 
 function mockFetch(response: Partial<Response> & { jsonBody?: unknown }) {
@@ -145,5 +148,46 @@ describe("auth endpoints", () => {
     const headers = options.headers as Headers;
     expect(headers.get("Authorization")).toBe("Bearer my-token");
     expect(user.email).toBe("a@b.com");
+  });
+});
+
+describe("preferences endpoints", () => {
+  afterEach(() => vi.restoreAllMocks());
+
+  it("getPreferenceOptions fetches the catalog", async () => {
+    const fetchMock = mockFetch({
+      jsonBody: { cities: [], cards: [], destination_interests: [], cabin_preferences: [], date_flexibility_options: [] },
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await getPreferenceOptions();
+
+    expect(fetchMock.mock.calls[0][0]).toBe("/api/v1/preferences/options");
+  });
+
+  it("getMyPreferences fetches the current profile", async () => {
+    setStoredToken("stored-token");
+    const fetchMock = mockFetch({ jsonBody: { id: "1", home_city: "new_york", cards: ["gold"] } });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await getMyPreferences();
+
+    const [path, options] = fetchMock.mock.calls[0];
+    expect(path).toBe("/api/v1/preferences/me");
+    const headers = options.headers as Headers;
+    expect(headers.get("Authorization")).toBe("Bearer stored-token");
+  });
+
+  it("updateMyPreferences sends a PUT with the profile body", async () => {
+    const fetchMock = mockFetch({ jsonBody: { id: "1", is_complete: true } });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const body = { home_city: "new_york", cards: ["gold"] };
+    await updateMyPreferences(body);
+
+    const [path, options] = fetchMock.mock.calls[0];
+    expect(path).toBe("/api/v1/preferences/me");
+    expect(options.method).toBe("PUT");
+    expect(JSON.parse(options.body as string)).toEqual(body);
   });
 });

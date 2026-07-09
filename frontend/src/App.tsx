@@ -1,9 +1,11 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import ProtectedRoute from "./components/ProtectedRoute";
+import OnboardingGuard from "./components/OnboardingGuard";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import DashboardPage from "./pages/DashboardPage";
 import LoginPage from "./pages/LoginPage";
+import PreferencesPage from "./pages/PreferencesPage";
 import SignUpPage from "./pages/SignUpPage";
 
 function RootRedirect() {
@@ -29,7 +31,11 @@ export default function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignUpPage />} />
           <Route element={<ProtectedRoute />}>
-            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/onboarding" element={<PreferencesPage variant="onboarding" />} />
+            <Route path="/preferences" element={<PreferencesPage variant="edit" />} />
+            <Route element={<OnboardingGuard />}>
+              <Route path="/dashboard" element={<DashboardPage />} />
+            </Route>
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
