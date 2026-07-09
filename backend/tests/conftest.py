@@ -11,6 +11,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from app.db.models.user import User  # noqa: F401 — register models with Base.metadata
+from app.db.models.user_profile import UserProfile  # noqa: F401
 from app.db.session import Base, get_db
 from app.main import app
 
@@ -44,3 +45,14 @@ def client(db_session):
             yield test_client
     finally:
         app.dependency_overrides.clear()
+
+
+REGISTER_URL = "/api/v1/auth/register"
+TEST_USER = {"email": "user@example.com", "password": "password123"}
+
+
+@pytest.fixture
+def registered_user(client):
+    response = client.post(REGISTER_URL, json=TEST_USER)
+    assert response.status_code == 201
+    return {**TEST_USER, "token": response.json()["access_token"]}

@@ -18,13 +18,6 @@ def _register(client, email=TEST_USER["email"], password=TEST_USER["password"]):
     return client.post(REGISTER_URL, json={"email": email, "password": password})
 
 
-@pytest.fixture
-def registered_user(client):
-    response = _register(client)
-    assert response.status_code == 201
-    return {**TEST_USER, "token": response.json()["access_token"]}
-
-
 def test_register_success(client):
     response = _register(client)
 
